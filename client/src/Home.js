@@ -13,7 +13,6 @@ export default function Home() {
   const [fileList, setFileList] = useState([]);
 
   const props = {
-    accept: "audio/wav",
     name: "audio",
     multiple: false,
     maxCount: 1,
