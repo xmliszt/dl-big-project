@@ -1,4 +1,6 @@
-torch==1.8.0+cpu torchvision==0.9.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==1.8.0+cpu 
+torchvision==0.9.0+cpu 
 appdirs==1.4.3
 argon2-cffi==20.1.0
 async-generator==1.10
