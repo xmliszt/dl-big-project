@@ -1,3 +1,6 @@
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==1.6.0+cpu
+torchvision==0.7.0+cpu
 appdirs==1.4.3
 argon2-cffi==20.1.0
 async-generator==1.10
@@ -78,9 +81,8 @@ terminado==0.9.4
 testpath==0.4.4
 threadpoolctl==2.1.0
 toml==0.10.2
-https://download.pytorch.org/whl/cpu/torch-1.6.0%2Bcpu-cp36-cp36m-linux_x86_64.whl 
 # torch==1.8.1
-torchvision==0.9.1
+# torchvision==0.9.1
 tornado==6.1
 tqdm==4.60.0
 traitlets==5.0.5
