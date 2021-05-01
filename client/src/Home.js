@@ -13,6 +13,7 @@ export default function Home() {
   const [fileList, setFileList] = useState([]);
 
   const props = {
+    accept: "audio/*",
     name: "audio",
     multiple: false,
     maxCount: 1,
@@ -135,7 +136,7 @@ export default function Home() {
                   Click or drag your audio file to this area to upload
                 </p>
                 <p className="ant-upload-hint">
-                  Only support single audio file upload: WAV, MP3
+                  Only support single audio file type upload
                 </p>
               </Upload>
             </div>
