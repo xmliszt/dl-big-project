@@ -90,8 +90,6 @@ app.post("/predict", (req, res) => {
       });
       pythonProcess.stderr.on("data", (data) => {
         console.error(`stderr: ${data}`);
-        res.status(500).send(data.toString());
-        return;
       });
       pythonProcess.on("close", (code) => {
         console.log(`child process exited with code ${code}`);
