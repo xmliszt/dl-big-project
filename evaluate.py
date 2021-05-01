@@ -1,19 +1,26 @@
 '''Evaluate the model by running through test set'''
+import os
 import torch
-from seaborn import sns
+import seaborn as sns
 from model import PCRNN
 from data_loader import get_data_loader, AudioDataset
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, f1_score, recall_score, precision_score
+import seaborn
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def show_confusion_matrix(y_true, y_pred, genre_list):
     '''Plot a confusion matrix'''
+
     mat = confusion_matrix(y_true, y_pred)
     sns.heatmap(mat.T, square=True, annot=True, fmt='d', cbar=False,
                 xticklabels=genre_list,
                 yticklabels=genre_list)
     plt.xlabel('true label')
     plt.ylabel('predicted label')
+    plt.show()
 
 
 def test(model_path=None):
@@ -88,11 +95,27 @@ def predict(model_path=None, audio_path=None):
     for k, v in genre_map.items():
         index_to_genre[v] = k
 
-    predictions = predictions.numpy()
+    predictions = predictions.detach().numpy()[0]
     for idx, confidence in enumerate(predictions):
         prediction_map[index_to_genre[idx]] = confidence
 
     sorted_predictions = sorted(
         prediction_map.items(), key=lambda item: item[1], reverse=True)
     top_5 = sorted_predictions[:5]
-    return top_5
+    results = []
+    for pred in top_5:
+        results.append({
+            "genre": pred[0],
+            "score": pred[1]
+        })
+    return results
+
+
+if __name__ == "__main__":
+    # evaluate("model3.pth")
+    DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+    audio_file_path = os.path.join(
+        DIR_PATH, "data", 'test', 'pop', "pop1.wav")
+    print(predict("model3.pth", audio_file_path))
+    # dataset = AudioDataset("train")
+    # print(dataset[100])

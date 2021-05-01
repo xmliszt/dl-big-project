@@ -40,15 +40,16 @@ class AudioDataset(Dataset):
 
     def get_dataset_count(self, dataset_path):
         '''Get the number of audio files in a particular dataset'''
+        total_count = 0
         for root, _, files in os.walk(dataset_path):
             total_count = len(files)
             train_count = total_count // 10 * 8
-            if self._mode == "train":
-                return train_count
-            elif self._mode == "validation":
-                return total_count - train_count
-            elif self._mode == "test":
-                return total_count
+        if self._mode == "train":
+            return train_count
+        elif self._mode == "validation":
+            return total_count - train_count
+        elif self._mode == "test":
+            return total_count
 
     def create_spectrogram(self, audio_path):
         '''Output a Mel-spectrogram in 2D array from an audio file'''
@@ -128,5 +129,6 @@ def get_data_loader(mode="train", batch_size=64):
 
 
 if __name__ == "__main__":
-    train_loader = get_data_loader(mode="validation")
+    train_loader = get_data_loader(mode="test", batch_size=1)
+    print(train_loader.dataset)
     print(len(train_loader.dataset))
