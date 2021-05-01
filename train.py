@@ -1,32 +1,28 @@
 '''Model training program'''
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-from data_loader import AudioDataset
-from crnn import Pcrnn
+from data_loader import get_data_loader
+from model import PCRNN
+import os
 import time
-
-
-train_set = AudioDataset(mode="train")
-validation_set = AudioDataset(mode="validation")
-print(train_set)
-print(validation_set)
-
-train_loader = DataLoader(train_set, batch_size=64, shuffle=True)
-test_loader = DataLoader(validation_set, batch_size=64, shuffle=True)
+import math
+from tqdm import tqdm
 
 
 def write_val_to_csv(val, name):
-
+    '''Append value to file, if not exist, create one'''
     with open("{}.csv".format(name), "a", encoding="utf-8") as fh:
         fh.write("{}\n".format(val))
     fh.close()
 
 
-def train(model=None, n_epochs=1):
+def train(model=None, n_epochs=1, batch_size=64):
     '''Train the model given'''
     if model is None:
         raise Exception("Model cannot be empty!")
+
+    train_loader = get_data_loader(mode="train", batch_size=batch_size)
+    test_loader = get_data_loader(mode="validation", batch_size=batch_size)
 
     lr = 5e-4
     optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
@@ -35,58 +31,55 @@ def train(model=None, n_epochs=1):
     best_accuracy = 0
 
     for epoch in range(1, n_epochs + 1):
-        train_loss = 0
 
         # Training
+        train_loss = 0
         model.train()
-        for datas, target in train_loader:
+        for datas, target in tqdm(train_loader, desc="Training..."):
             optimizer.zero_grad()
             output = model.forward(datas)
             loss = criterion(output, target)
             loss.backward()
             optimizer.step()
-
             train_loss += loss.item()
 
-            accuracy = 0
+        # Evaluation
+        accuracy = 0
+        valid_loss = 0
+        model.eval()
+        for data, val_target in tqdm(test_loader, desc="Validating..."):
+            val_output = model.forward(data)
+            loss = criterion(val_output, val_target)
+            valid_loss += loss.item()
+            _, preds = torch.max(val_output, 1)
+            accuracy += sum((preds == val_target).numpy())
 
-            # Evaluation
-            valid_loss = 0
-            model.eval()
-            for val_step, (data, val_target) in enumerate(test_loader):
-                data, tmp_target = data, val_target
-                val_output = model.forward(data)
-                loss = criterion(val_output, tmp_target)
-                valid_loss += loss.item()
-                _, preds = torch.max(val_output, 1)
-                accuracy += sum((preds == tmp_target).numpy())
+        train_loss /= math.ceil(len(test_loader.dataset)/batch_size)
+        valid_loss /= math.ceil(len(test_loader.dataset)/batch_size)
+        accuracy /= len(test_loader.dataset)
 
-            valid_loss /= (len(test_loader.dataset)//64)
-            accuracy /= (len(test_loader.dataset))
+        print("Epoch: {:3}/{:3} Train Loss: {:.4f} Validation Loss: {:.4f} Accuracy: {:.2f}%".format(
+            epoch, n_epochs, train_loss, valid_loss, accuracy*100))
 
-            print("Epoch: {:3}/{:3} Train Loss: {:.6f} Validation Loss: {:.6f} Accuracy: {:.4f}".format(
-                epoch, n_epochs, len(train_loader)*10, train_loss, valid_loss, accuracy))
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            torch.save(model.state_dict(), "model2.pth")
 
-            if accuracy > best_accuracy:
-                best_accuracy = accuracy
-                torch.save(model.state_dict(), "model.pth")
+        write_val_to_csv(valid_loss, "validation_loss2")
+        write_val_to_csv(accuracy, "accuracy2")
+        write_val_to_csv(train_loss, "train_loss2")
 
-            write_val_to_csv(valid_loss, "validation_loss")
-            write_val_to_csv(accuracy, "accuracy")
-            write_val_to_csv(train_loss, "train_loss")
+        if accuracy >= 0.98:
+            print('Performance condition satisfied, stopping..')
+            torch.save(model.state_dict(), "model.pth")
+            print("Run time: {:.3f} min".format(
+                (time.time() - start)/60))
+            return model
 
-            model.train()
-
-            if accuracy >= 0.98:
-                print('Performance condition satisfied, stopping..')
-                torch.save(model.state_dict(), "model.pth")
-                print("Run time: {:.3f} min".format(
-                    (time.time() - start)/60))
-                return model, train_loss_list, validation_loss_list, accuracy_list
-
-    return model, train_loss_list, validation_loss_list, accuracy_list
+    return model
 
 
 if __name__ == "__main__":
-    model = Pcrnn()
-    train(model)
+    model = PCRNN()
+    model.load_state_dict(torch.load("model.pth"))
+    train(model, n_epochs=100)

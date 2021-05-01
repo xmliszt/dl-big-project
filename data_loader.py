@@ -4,9 +4,7 @@ import os
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-import torch
 from torch.utils.data import Dataset, DataLoader
-from tqdm import tqdm
 import librosa
 import librosa.display
 
@@ -17,8 +15,8 @@ class AudioDataset(Dataset):
     '''Dataset Object, please put all audio files under data/genres_original folder in each genre folder'''
 
     def __init__(self, mode="train"):
-        if mode not in ["train", "validation"]:
-            raise ValueError("Mode must be either train or validation")
+        if mode not in ["train", "validation", "test"]:
+            raise ValueError("Mode must be either train or validation or test")
         self._mode = mode
         self._class = {
             "blues": 0,
@@ -35,7 +33,9 @@ class AudioDataset(Dataset):
 
     def get_dataset_path(self, _class):
         '''Get the path to a particular class folder'''
-        audio_path = os.path.join(DIR_PATH, "data", "genres_original", _class)
+        audio_path = os.path.join(DIR_PATH, "data", _class)
+        if self._mode == "test":
+            audio_path = os.path.join(DIR_PATH, "data", "test", _class)
         return audio_path
 
     def get_dataset_count(self, dataset_path):
@@ -47,6 +47,8 @@ class AudioDataset(Dataset):
                 return train_count
             elif self._mode == "validation":
                 return total_count - train_count
+            elif self._mode == "test":
+                return total_count
 
     def create_spectrogram(self, audio_path):
         '''Output a Mel-spectrogram in 2D array from an audio file'''
@@ -103,6 +105,8 @@ class AudioDataset(Dataset):
                     sub_audio_files = files[: train_count]
                 elif self._mode == "validation":
                     sub_audio_files = files[train_count:]
+                elif self._mode == "test":
+                    sub_audio_files = files
             for audio_file in sub_audio_files:
                 all_audio_files.append({
                     "path": os.path.join(dataset_path, audio_file),
@@ -117,7 +121,12 @@ class AudioDataset(Dataset):
         return spect_expand, self._class[target_label]
 
 
+def get_data_loader(mode="train", batch_size=64):
+    '''Get the Dataloader, mode can be train or validation'''
+    dataset = AudioDataset(mode=mode)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+
 if __name__ == "__main__":
-    dataset = AudioDataset(mode="validation")
-    print(dataset)
-    dataset.show_item(106)
+    train_loader = get_data_loader(mode="validation")
+    print(len(train_loader.dataset))

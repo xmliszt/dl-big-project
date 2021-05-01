@@ -1,16 +1,10 @@
-import os
 import time
-import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
 import torch
 import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
 import torch.nn as nn
 
 
-class Pcrnn(nn.Module):
+class PCRNN(nn.Module):
     def __init__(self, ks=(3, 1)):
         super().__init__()
         # CNN
