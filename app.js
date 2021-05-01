@@ -38,6 +38,10 @@ app.post("/upload", (req, res) => {
     } else {
       var audioFile = req.files.audio;
       try {
+        if (!fs.existsSync("./upload")) {
+          fs.mkdirSync("./upload");
+          console.log("upload folder is created!");
+        }
         fs.writeFileSync(
           `upload/${audioFile.name}`,
           Buffer.from(new Uint8Array(audioFile.data))
