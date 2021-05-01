@@ -74,6 +74,7 @@ export default function Home() {
   const handleCloseResult = () => {
     setShowResult(false);
     setFileList([]);
+    setUploadDone(false);
   };
 
   var UploadButton;

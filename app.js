@@ -75,8 +75,7 @@ app.post("/predict", (req, res) => {
       pythonProcess.stdout.on("data", (data) => {
         var dataStr = data.toString();
         dataStr = dataStr.replace(/\n/g, "").replace(/'/g, '"');
-        fs.unlink(`./upload/${filename}`, (err) => {
-          if (err) throw err;
+        fs.unlink(`./upload/${filename}`, () => {
           console.log(`${filename} was deleted`);
         });
         res.send({
