@@ -72,7 +72,7 @@ app.post("/predict", (req, res) => {
     var rootDir = path.join(__dirname, "../");
     try {
       const pythonProcess = cp.spawn("python3", [
-        path.join(rootDir, "model", "predict.py"),
+        path.join(rootDir, "predict.py"),
         filename,
       ]);
       pythonProcess.stdout.on("data", (data) => {
