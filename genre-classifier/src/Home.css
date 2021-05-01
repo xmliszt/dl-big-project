@@ -1,0 +1,86 @@
+.home-wrapper {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title-style {
+  font-size: 3rem;
+  font-variant: small-caps;
+  font-weight: 100;
+  color: rgb(26, 116, 175);
+}
+
+.subtitle-style {
+  font-size: 1rem;
+  font-weight: 100;
+  color: rgb(71, 71, 71);
+}
+
+.upload-wrapper {
+  margin-top: 2rem;
+  width: 65vw;
+  height: 30vh;
+  border: 1px dashed rgb(53, 171, 250);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-wrapper:hover {
+  cursor: pointer;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  transition: box-shadow 0.3s;
+}
+
+.ant-upload-drag-icon {
+  font-size: 3rem;
+  font-weight: 100;
+  color: rgb(53, 171, 250);
+}
+
+.ant-upload-text {
+  font-size: 1.5rem;
+}
+
+.upload-button-wrapper {
+  margin-top: 1.5rem;
+}
+
+.progress-wrapper {
+  width: 80%;
+}
+
+.genre-text {
+  font-variant: small-caps;
+  margin-right: 1rem;
+}
+
+.result-wrapper {
+  padding: 0.5rem 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .title-style {
+    font-size: 2rem;
+  }
+
+  .upload-wrapper {
+    width: 90vw;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  }
+
+  .ant-upload-text {
+    font-size: 0.8rem;
+  }
+}
