@@ -10,6 +10,7 @@ export default function Home() {
   const [uploadFilename, setUploadFilename] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [predictions, setPredictions] = useState([]);
+  const [fileList, setFileList] = useState([]);
 
   const props = {
     name: "audio",
@@ -18,6 +19,14 @@ export default function Home() {
     action: "https://genrewiz.herokuapp.com/upload",
     onChange(info) {
       const { status } = info.file;
+      let list = [...info.fileList];
+      list = list.map((file) => {
+        if (file.response) {
+          file.url = file.response.url;
+        }
+        return file;
+      });
+
       if (status === "done") {
         setUploadDone(true);
         message.success(`${info.file.name} file uploaded successfully.`);
@@ -28,6 +37,8 @@ export default function Home() {
         message.warning(`${info.file.name} file removed successfully.`);
         setUploadDone(false);
       }
+
+      setFileList(list);
     },
     progress: {
       strokeColor: {
@@ -61,6 +72,7 @@ export default function Home() {
 
   const handleCloseResult = () => {
     setShowResult(false);
+    setFileList([]);
   };
 
   var UploadButton;
@@ -115,7 +127,7 @@ export default function Home() {
           </div>
           <div className="upload-container">
             <div className="upload-wrapper">
-              <Upload {...props}>
+              <Upload {...props} fileList={fileList}>
                 <p className="ant-upload-drag-icon">
                   <InboxOutlined height="1rem" width="1rem" />
                 </p>
