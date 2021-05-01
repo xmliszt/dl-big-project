@@ -1,10 +1,11 @@
 {
-  "name": "backend",
+  "name": "genrewiz",
   "version": "1.0.0",
-  "description": "",
+  "description": "An immature Genre Classifier",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd client && npm install && npm run build && cd .. && node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +17,6 @@
     "express-fileupload": "^1.2.1",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0"
-  }
+  },
+  "heroku-postbuild": "cd client && npm install && npm run build"
 }

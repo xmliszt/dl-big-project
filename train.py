@@ -24,7 +24,7 @@ def train(model=None, n_epochs=1, batch_size=64):
     train_loader = get_data_loader(mode="train", batch_size=batch_size)
     test_loader = get_data_loader(mode="validation", batch_size=batch_size)
 
-    lr = 5e-5
+    lr = 3e-4
     optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
     criterion = torch.nn.CrossEntropyLoss()
 
@@ -63,15 +63,15 @@ def train(model=None, n_epochs=1, batch_size=64):
 
         if accuracy > best_accuracy:
             best_accuracy = accuracy
-            torch.save(model.state_dict(), "model3.pth")
+            torch.save(model.state_dict(), "model4.pth")
 
-        write_val_to_csv(valid_loss, "validation_loss3")
-        write_val_to_csv(accuracy, "accuracy3")
-        write_val_to_csv(train_loss, "train_loss3")
+        write_val_to_csv(valid_loss, "validation_loss4")
+        write_val_to_csv(accuracy, "accuracy4")
+        write_val_to_csv(train_loss, "train_loss4")
 
         if accuracy >= 0.98:
             print('Performance condition satisfied, stopping..')
-            torch.save(model.state_dict(), "model3.pth")
+            torch.save(model.state_dict(), "model4.pth")
             print("Run time: {:.3f} min".format(
                 (time.time() - start)/60))
             return model
@@ -81,5 +81,5 @@ def train(model=None, n_epochs=1, batch_size=64):
 
 if __name__ == "__main__":
     model = PCRNN()
-    # model.load_state_dict(torch.load("model3.pth"))
+    model.load_state_dict(torch.load("model3.pth"))
     train(model, n_epochs=200)

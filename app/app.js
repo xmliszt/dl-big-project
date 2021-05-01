@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || "5000";
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,6 +21,12 @@ app.use(
     createParentPath: true,
   })
 );
+
+app.use(express.static(path.join(__dirname, "client", "build")));
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+});
 
 app.post("/upload", (req, res) => {
   try {
@@ -96,5 +102,5 @@ app.post("/predict", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`listening at http://localhost:${port}`);
+  console.log(`listening at port: ${port}`);
 });

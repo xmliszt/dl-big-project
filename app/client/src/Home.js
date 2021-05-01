@@ -15,7 +15,7 @@ export default function Home() {
     name: "audio",
     multiple: false,
     maxCount: 1,
-    action: "http://localhost:3001/upload",
+    action: "https://genrewiz.herokuapp.com/upload",
     onChange(info) {
       const { status } = info.file;
       if (status === "done") {
@@ -42,9 +42,12 @@ export default function Home() {
   const submitUpload = async () => {
     try {
       setLoading(true);
-      let response = await axios.post("http://localhost:3001/predict", {
-        name: uploadFilename,
-      });
+      let response = await axios.post(
+        "https://genrewiz.herokuapp.com/predict",
+        {
+          name: uploadFilename,
+        }
+      );
       var predictions = response.data.data.prediction;
       setPredictions(predictions);
       setLoading(false);
@@ -105,7 +108,7 @@ export default function Home() {
       >
         <div>
           <div className="title-style">
-            <span>Genre Classifier</span>
+            <span>GenreWiz: Your Genre Classifier</span>
           </div>
           <div className="subtitle-style">
             <span>Upload your music now!</span>
