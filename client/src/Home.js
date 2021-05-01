@@ -113,19 +113,22 @@ export default function Home() {
           <div className="subtitle-style">
             <span>Upload your music now!</span>
           </div>
-          <div className="upload-wrapper">
-            <Upload {...props}>
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined height="1rem" width="1rem" />
-              </p>
-              <p className="ant-upload-text">
-                Click or drag your audio file to this area to upload
-              </p>
-              <p className="ant-upload-hint">
-                Only support single audio file upload: WAV, MP3
-              </p>
-            </Upload>
+          <div className="upload-container">
+            <div className="upload-wrapper">
+              <Upload {...props}>
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined height="1rem" width="1rem" />
+                </p>
+                <p className="ant-upload-text">
+                  Click or drag your audio file to this area to upload
+                </p>
+                <p className="ant-upload-hint">
+                  Only support single audio file upload: WAV, MP3
+                </p>
+              </Upload>
+            </div>
           </div>
+
           {UploadButton}
         </div>
       </Spin>

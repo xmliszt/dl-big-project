@@ -21,6 +21,11 @@
   color: rgb(71, 71, 71);
 }
 
+.upload-container {
+  display: flex;
+  justify-content: center;
+}
+
 .upload-wrapper {
   margin-top: 2rem;
   width: 65vw;
@@ -76,7 +81,8 @@
   }
 
   .upload-wrapper {
-    width: 90vw;
+    width: 80vw;
+    height: 40vh;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   }
 
