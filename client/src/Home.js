@@ -13,7 +13,7 @@ export default function Home() {
   const [fileList, setFileList] = useState([]);
 
   const props = {
-    accept: "audio/*",
+    accept: "audio/wav",
     name: "audio",
     multiple: false,
     maxCount: 1,
@@ -27,7 +27,12 @@ export default function Home() {
         }
         return file;
       });
-
+      var fileType = info.file.name.split(".").pop().toLowerCase();
+      if (fileType !== "wav") {
+        message.error("Only WAV file is allowed");
+        setFileList = [];
+        return;
+      }
       if (status === "done") {
         setUploadDone(true);
         message.success(`${info.file.name} file uploaded successfully.`);
@@ -38,7 +43,6 @@ export default function Home() {
         message.warning(`${info.file.name} file removed successfully.`);
         setUploadDone(false);
       }
-
       setFileList(list);
     },
     progress: {
@@ -137,7 +141,7 @@ export default function Home() {
                   Click or drag your audio file to this area to upload
                 </p>
                 <p className="ant-upload-hint">
-                  Only support single audio file type upload
+                  Only support .wav (WAV) audio file type. Single file upload.
                 </p>
               </Upload>
             </div>
