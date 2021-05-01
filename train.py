@@ -24,7 +24,7 @@ def train(model=None, n_epochs=1, batch_size=64):
     train_loader = get_data_loader(mode="train", batch_size=batch_size)
     test_loader = get_data_loader(mode="validation", batch_size=batch_size)
 
-    lr = 3e-4
+    lr = 5e-4
     optimizer = torch.optim.RMSprop(model.parameters(), lr=lr)
     criterion = torch.nn.CrossEntropyLoss()
 
@@ -81,5 +81,5 @@ def train(model=None, n_epochs=1, batch_size=64):
 
 if __name__ == "__main__":
     model = PCRNN()
-    model.load_state_dict(torch.load("model3.pth"))
+    model.load_state_dict(torch.load("model2.pth"))
     train(model, n_epochs=200)

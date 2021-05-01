@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "An immature Genre Classifier",
   "main": "app.js",
+  "engines": {
+    "node": "10.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd client && npm install && npm run build && cd .. && node app.js"
