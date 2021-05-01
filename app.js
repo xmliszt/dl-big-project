@@ -69,12 +69,9 @@ app.post("/upload", (req, res) => {
 app.post("/predict", (req, res) => {
   try {
     var filename = req.body.name;
-    var rootDir = path.join(__dirname, "../");
+    // var rootDir = path.join(__dirname, "../");
     try {
-      const pythonProcess = cp.spawn("python3", [
-        path.join(rootDir, "predict.py"),
-        filename,
-      ]);
+      const pythonProcess = cp.spawn("python3", ["./predict.py", filename]);
       pythonProcess.stdout.on("data", (data) => {
         var dataStr = data.toString();
         dataStr = dataStr.replace(/\n/g, "").replace(/'/g, '"');
