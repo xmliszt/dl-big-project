@@ -67,10 +67,10 @@ app.post("/predict", (req, res) => {
     var filename = req.body.name;
     var rootDir = path.join(__dirname, "../");
     try {
-      const pythonProcess = cp.spawn(
-        "/home/xmliszt/Documents/git/dl-big-project/venv/bin/python",
-        [path.join(rootDir, "predict.py"), filename]
-      );
+      const pythonProcess = cp.spawn("python3", [
+        path.join(rootDir, "model", "predict.py"),
+        filename,
+      ]);
       pythonProcess.stdout.on("data", (data) => {
         var dataStr = data.toString();
         dataStr = dataStr.replace(/\n/g, "").replace(/'/g, '"');

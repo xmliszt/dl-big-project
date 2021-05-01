@@ -112,10 +112,10 @@ def predict(model_path=None, audio_path=None):
 
 
 if __name__ == "__main__":
-    # evaluate("model3.pth")
-    DIR_PATH = os.path.dirname(os.path.realpath(__file__))
-    audio_file_path = os.path.join(
-        DIR_PATH, "data", 'test', 'pop', "pop1.wav")
-    print(predict("model3.pth", audio_file_path))
+    evaluate("model3.pth")
+    # DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+    # audio_file_path = os.path.join(
+    #     DIR_PATH, "data", 'test', 'pop', "pop1.wav")
+    # print(predict("model3.pth", audio_file_path))
     # dataset = AudioDataset("train")
     # print(dataset[100])
