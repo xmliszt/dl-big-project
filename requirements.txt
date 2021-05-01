@@ -1,5 +1,4 @@
-pytorch-cpu 
-torchvision-cpu 
+torch==1.8.0+cpu torchvision==0.9.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 appdirs==1.4.3
 argon2-cffi==20.1.0
 async-generator==1.10
