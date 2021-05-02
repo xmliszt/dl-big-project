@@ -28,6 +28,8 @@ app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
+let predictionResult = Object();
+
 app.post("/upload", (req, res) => {
   try {
     if (!req.files) {
@@ -55,6 +57,24 @@ app.post("/upload", (req, res) => {
             size: audioFile.size,
           },
         });
+        // Start prediction
+        let filename = audioFile.name;
+        console.log(`Start prediction for ${filename}`);
+        const pythonProcess = cp.spawn("python3", ["./predict.py", filename]);
+        pythonProcess.stdout.on("data", (data) => {
+          var dataStr = data.toString();
+          dataStr = dataStr.replace(/\n/g, "").replace(/'/g, '"');
+          predictionResult[filename] = dataStr;
+        });
+        pythonProcess.stderr.on("data", (data) => {
+          console.error(`stderr: ${data}`);
+        });
+        pythonProcess.on("close", (code) => {
+          console.log(`child process exited with code ${code}`);
+          fs.unlink(`./upload/${filename}`, () => {
+            console.log(`${filename} was deleted`);
+          });
+        });
       } catch (err) {
         console.log(err);
         res.status(500).send(err);
@@ -66,37 +86,27 @@ app.post("/upload", (req, res) => {
   }
 });
 
-app.post("/predict", (req, res) => {
+app.post("/check", (req, res) => {
+  var filename = req.body.name;
+  // var rootDir = path.join(__dirname, "../");
   try {
-    var filename = req.body.name;
-    // var rootDir = path.join(__dirname, "../");
-    try {
-      const pythonProcess = cp.spawn("python3", ["./predict.py", filename]);
-      pythonProcess.stdout.on("data", (data) => {
-        var dataStr = data.toString();
-        dataStr = dataStr.replace(/\n/g, "").replace(/'/g, '"');
-        console.log(dataStr);
-        res.send({
-          status: true,
-          message: "Prediction results",
-          data: {
-            name: filename,
-            prediction: JSON.parse(dataStr),
-          },
-        });
+    let result = predictionResult[filename];
+    if (result) {
+      res.send({
+        status: true,
+        message: "Prediction results",
+        code: 1,
+        data: {
+          name: filename,
+          prediction: JSON.parse(result),
+        },
       });
-      pythonProcess.stderr.on("data", (data) => {
-        console.error(`stderr: ${data}`);
+    } else {
+      res.send({
+        status: true,
+        message: "No results",
+        code: 0,
       });
-      pythonProcess.on("close", (code) => {
-        console.log(`child process exited with code ${code}`);
-        fs.unlink(`./upload/${filename}`, () => {
-          console.log(`${filename} was deleted`);
-        });
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).send(err);
     }
   } catch (err) {
     console.log(err);

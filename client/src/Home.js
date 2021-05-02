@@ -1,22 +1,42 @@
 import { Upload, message, Button, Spin, Modal, Space, Progress } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import "./Home.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
+const env = process.env.NODE_ENV;
+
+const baseUrl =
+  env === "production"
+    ? "https://genrewiz.herokuapp.com"
+    : "http://localhost:5000";
+
+console.log("Base URL is: " + baseUrl);
+
 export default function Home() {
-  const [uploadDone, setUploadDone] = useState(false);
+  const [viewResults, setViewResults] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [uploadFilename, setUploadFilename] = useState("");
   const [showResult, setShowResult] = useState(false);
+  const [uploadedFilename, setUploadedFilename] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [fileList, setFileList] = useState([]);
+  const [startCheck, setStartCheck] = useState(false);
+
+  useEffect(() => {
+    let checker;
+    if (startCheck === true) {
+      checker = setInterval(() => {
+        checkResults(uploadedFilename);
+      }, 1000);
+    }
+    return () => clearInterval(checker);
+  }, [startCheck]);
 
   const props = {
     name: "audio",
     multiple: false,
     maxCount: 1,
-    action: "https://genrewiz.herokuapp.com/upload",
+    action: baseUrl + "/upload",
     onChange(info) {
       const { status } = info.file;
       let list = [...info.fileList];
@@ -33,14 +53,17 @@ export default function Home() {
         return;
       }
       if (status === "done") {
-        setUploadDone(true);
+        setViewResults(false);
         message.success(`${info.file.name} file uploaded successfully.`);
-        setUploadFilename(info.file.name);
+        setUploadedFilename(info.file.name);
+        setLoading(true);
+        setStartCheck(true);
       } else if (status === "error") {
+        setViewResults(false);
         message.error(`${info.file.name} file upload failed.`);
       } else if (status === "removed") {
         message.warning(`${info.file.name} file removed successfully.`);
-        setUploadDone(false);
+        setViewResults(false);
       }
       setFileList(list);
     },
@@ -54,39 +77,56 @@ export default function Home() {
     },
   };
 
-  const submitUpload = async () => {
+  const checkResults = async (filename) => {
     try {
-      setLoading(true);
-      let response = await axios.post(
-        "https://genrewiz.herokuapp.com/predict",
-        {
-          name: uploadFilename,
-        }
-      );
-      var predictions = response.data.data.prediction;
-      setPredictions(predictions);
-      setLoading(false);
-      setShowResult(true);
+      let response = await axios.post(baseUrl + "/check", {
+        name: filename,
+      });
+      var code = response.data.code;
+      console.log("Code: " + code);
+      if (code === 1) {
+        setLoading(false);
+        var predictions = response.data.data.prediction;
+        setPredictions(predictions);
+        setViewResults(true);
+        setStartCheck(false);
+      } else {
+        setLoading(true);
+      }
     } catch (err) {
       setLoading(false);
       console.error(err);
       message.error(err);
+      setStartCheck(false);
     }
+  };
+
+  const onViewResults = () => {
+    setShowResult(true);
   };
 
   const handleCloseResult = () => {
     setShowResult(false);
-    setFileList([]);
-    setUploadDone(false);
   };
 
-  var UploadButton;
-  if (uploadDone) {
-    UploadButton = (
+  var ViewResults;
+  var Loading;
+  if (viewResults) {
+    ViewResults = (
       <div className="upload-button-wrapper">
-        <Button type="primary" size="large" onClick={submitUpload}>
-          Predict Genres
+        <Button type="primary" size="large" onClick={onViewResults}>
+          View Results
         </Button>
+      </div>
+    );
+  }
+  if (loading) {
+    Loading = (
+      <div style={{ marginTop: "1rem" }}>
+        <Space>
+          <Spin spinning={loading} size="default" />
+          <span> AI is predicting the genres for you...</span>
+        </Space>
       </div>
     );
   }
@@ -118,37 +158,32 @@ export default function Home() {
           </div>
         ))}
       </Modal>
-      <Spin
-        spinning={loading}
-        tip="AI is predicting the genres for you..."
-        size="large"
-      >
-        <div>
-          <div className="title-style">
-            <span>GenreWiz: Your Genre Classifier</span>
-          </div>
-          <div className="subtitle-style">
-            <span>Upload your music now!</span>
-          </div>
-          <div className="upload-container">
-            <div className="upload-wrapper">
-              <Upload {...props} fileList={fileList}>
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined height="1rem" width="1rem" />
-                </p>
-                <p className="ant-upload-text">
-                  Click or drag your audio file to this area to upload
-                </p>
-                <p className="ant-upload-hint">
-                  Only support .wav (WAV) audio file type. Single file upload.
-                </p>
-              </Upload>
-            </div>
-          </div>
 
-          {UploadButton}
+      <div>
+        <div className="title-style">
+          <span>GenreWiz: Your Genre Classifier</span>
         </div>
-      </Spin>
+        <div className="subtitle-style">
+          <span>Upload your music now!</span>
+        </div>
+        <div className="upload-container">
+          <div className="upload-wrapper">
+            <Upload {...props} fileList={fileList}>
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined height="1rem" width="1rem" />
+              </p>
+              <p className="ant-upload-text">
+                Click or drag your audio file to this area to upload
+              </p>
+              <p className="ant-upload-hint">
+                Only support .wav (WAV) audio file type. Single file upload.
+              </p>
+            </Upload>
+          </div>
+        </div>
+        {Loading}
+        {ViewResults}
+      </div>
     </div>
   );
 }
