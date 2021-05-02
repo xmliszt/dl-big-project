@@ -196,14 +196,21 @@ export default function Home() {
       </div>
       <div className="footer-wrapper">
         <Space>
-          <div style={{ fontSize: "1.5rem", color: "rgb(26, 116, 175)" }}>
+          <div
+            style={{
+              fontSize: "1.5rem",
+              color: "rgb(71, 71, 71)",
+              opacity: 0.7,
+            }}
+          >
             <GithubOutlined
               style={{
                 "::hover": {
                   cursor: "pointer",
+                  opacity: 1,
+                  transition: "opacity 0.3s",
                 },
               }}
-              spin={true}
               onClick={() => {
                 window.open("https://github.com/xmliszt/dl-big-project");
               }}
