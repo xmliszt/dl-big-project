@@ -75,6 +75,7 @@ app.post("/predict", (req, res) => {
       pythonProcess.stdout.on("data", (data) => {
         var dataStr = data.toString();
         dataStr = dataStr.replace(/\n/g, "").replace(/'/g, '"');
+        console.log(dataStr);
         res.send({
           status: true,
           message: "Prediction results",
