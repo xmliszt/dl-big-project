@@ -21,12 +21,22 @@ export default function Home() {
   const [predictions, setPredictions] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [startCheck, setStartCheck] = useState(false);
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+
+  useEffect(() => {
+    if (secondsElapsed > 10 * 1000) {
+      message.error(
+        "Heroku server has timeout. Please refresh the page and retry."
+      );
+    }
+  }, [secondsElapsed]);
 
   useEffect(() => {
     let checker;
     if (startCheck === true) {
       checker = setInterval(() => {
         checkResults(uploadedFilename);
+        setSecondsElapsed((secondsElapsed) => secondsElapsed + 1);
       }, 1000);
     }
     return () => clearInterval(checker);
