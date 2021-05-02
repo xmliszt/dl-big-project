@@ -16,7 +16,7 @@ def write_val_to_csv(val, name):
     fh.close()
 
 
-def train(model=None, n_epochs=1, batch_size=64):
+def train(model=None, n_epochs=1, batch_size=64, experiment_name="test"):
     '''Train the model given'''
     if model is None:
         raise Exception("Model cannot be empty!")
@@ -63,17 +63,15 @@ def train(model=None, n_epochs=1, batch_size=64):
 
         if accuracy > best_accuracy:
             best_accuracy = accuracy
-            torch.save(model.state_dict(), "model4.pth")
+            torch.save(model.state_dict(), "{}.pth".format(experiment_name))
 
-        write_val_to_csv(valid_loss, "validation_loss4")
-        write_val_to_csv(accuracy, "accuracy4")
-        write_val_to_csv(train_loss, "train_loss4")
+        write_val_to_csv(valid_loss, "{}_validation_loss".format(experiment_name))
+        write_val_to_csv(accuracy, "{}_accuracy".format(experiment_name))
+        write_val_to_csv(train_loss, "{}_train_loss".format(experiment_name))
 
         if accuracy >= 0.98:
             print('Performance condition satisfied, stopping..')
-            torch.save(model.state_dict(), "model4.pth")
-            print("Run time: {:.3f} min".format(
-                (time.time() - start)/60))
+            torch.save(model.state_dict(), "{}.pth".format(experiment_name))
             return model
 
     return model
@@ -81,5 +79,5 @@ def train(model=None, n_epochs=1, batch_size=64):
 
 if __name__ == "__main__":
     model = PCRNN()
-    model.load_state_dict(torch.load("model2.pth"))
-    train(model, n_epochs=200)
+    model.load_state_dict(torch.load("model.pth"))
+    train(model, n_epochs=200, batch_size=64, experiment_name="new_test")
