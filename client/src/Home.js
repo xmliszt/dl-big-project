@@ -24,7 +24,7 @@ export default function Home() {
   const [secondsElapsed, setSecondsElapsed] = useState(0);
 
   useEffect(() => {
-    if (secondsElapsed % 30 === 0) {
+    if (secondsElapsed % 30 === 0 && secondsElapsed !== 0) {
       message.error(
         "Heroku server has timeout. Please refresh the page and retry."
       );
