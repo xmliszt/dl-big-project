@@ -1,5 +1,5 @@
 import { Upload, message, Button, Spin, Modal, Space, Progress } from "antd";
-import { InboxOutlined } from "@ant-design/icons";
+import { InboxOutlined, GithubOutlined } from "@ant-design/icons";
 import "./Home.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -193,6 +193,23 @@ export default function Home() {
         </div>
         {Loading}
         {ViewResults}
+      </div>
+      <div className="footer-wrapper">
+        <Space>
+          <div style={{ fontSize: "1.5rem", color: "rgb(26, 116, 175)" }}>
+            <GithubOutlined
+              style={{
+                "::hover": {
+                  cursor: "pointer",
+                },
+              }}
+              spin={true}
+              onClick={() => {
+                window.open("https://github.com/xmliszt/dl-big-project");
+              }}
+            />
+          </div>
+        </Space>
       </div>
     </div>
   );
